@@ -1,39 +1,4 @@
-## Summary
-Fix Docker image build failure reported in #21 by removing a pnpm/Node runtime incompatibility and correcting workspace configuration required during `pnpm build` in the container.
-
-## Problem
-Docker build failed at dependency/build stages with:
-- `This version of pnpm requires at least Node.js v22.13`
-- `ERR_UNKNOWN_BUILTIN_MODULE: No such built-in module: node:sqlite`
-- `pnpm build` failed with `packages field missing or empty`
-
-The image uses `node:20-alpine`, but `corepack prepare pnpm@latest --activate` pulled pnpm v11, which requires newer Node and references `node:sqlite`.
-
-## Root Cause
-1. `Dockerfile` installed `pnpm@latest`, allowing a major upgrade incompatible with Node 20.
-2. `pnpm-workspace.yaml` did not declare a `packages` field, which causes pnpm to fail when workspace config is present.
-
-## Changes
-1. Pin pnpm in Docker image setup to a Node 20 compatible version:
-   - `pnpm@9.15.4` via corepack in `Dockerfile`.
-2. Add required workspace package declaration for this single-package repo:
-   - `packages: ['.']` in `pnpm-workspace.yaml`.
-
-## Why this fix
-- Keeps current Node 20 base image unchanged (minimal and low risk).
-- Avoids accidental future breakage from `pnpm@latest` major upgrades.
-- Aligns with existing lockfile major (`lockfileVersion: '9.0'`).
-
-## Validation
-Executed:
-- `docker build -t aicomicbuilder:test /home/calelin/dev/AIComicBuilder`
-
-Result:
-- Build completed successfully.
-- `pnpm install --frozen-lockfile` succeeded.
-- `pnpm build` succeeded.
-- Final image was produced: `aicomicbuilder:test`.
-
-## Files Changed
-- `Dockerfile`
-- `pnpm-workspace.yaml`
+本次变更用于支持 OpenAI 兼容的视频生成能力，面向 issue-10 的格式与能力接入需求。
+主要改动包括新增 OpenAI 视频 provider 实现，补充 provider 工厂中的接入与路由逻辑，扩展模型能力上限配置，并在设置页面表单中增加对应的配置项与交互支持。
+核心新增文件为 src/lib/ai/providers/openai-video.ts，同时联动修改了 src/lib/ai/provider-factory.ts、src/lib/ai/model-limits.ts 和 src/components/settings/provider-form.tsx。
+本次描述已按要求改为中文纯文本格式，不使用 Markdown 标题、列表或代码标记。
