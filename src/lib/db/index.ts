@@ -47,7 +47,8 @@ function createDb(): DrizzleDB {
   if (globalForDb.drizzleDb) return globalForDb.drizzleDb;
 
   const sqlite = getSqlite();
-  const instance = drizzle(sqlite, { schema });
+  const drizzleConfig = { schema };
+  const instance = drizzle(sqlite, drizzleConfig);
   if (process.env.NODE_ENV !== "production") {
     globalForDb.drizzleDb = instance;
   }
