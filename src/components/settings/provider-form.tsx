@@ -40,6 +40,7 @@ function getProtocolOptions(capability: Capability): { value: Protocol; label: s
   }
   // video
   return [
+    { value: "openai", label: "OpenAI" },
     { value: "seedance", label: "Seedance" },
     { value: "ucloud-seedance", label: "Seedance (UCloud)" },
     { value: "gemini", label: "Gemini (Veo)" },

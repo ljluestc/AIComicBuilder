@@ -7,6 +7,7 @@ import { KlingVideoProvider } from "./providers/kling-video";
 import { WanVideoProvider } from "./providers/wan-video";
 import { UCloudSeedanceProvider } from "./providers/ucloud-seedance";
 import { DashScopeImageProvider } from "./providers/dashscope-image";
+import { OpenAIVideoProvider } from "./providers/openai-video";
 import { getAIProvider, getVideoProvider } from "./index";
 import type { AIProvider, VideoProvider } from "./types";
 
@@ -62,6 +63,13 @@ export function createAIProvider(config: ProviderConfig, uploadDir?: string): AI
 
 export function createVideoProvider(config: ProviderConfig, uploadDir?: string): VideoProvider {
   switch (config.protocol) {
+    case "openai":
+      return new OpenAIVideoProvider({
+        apiKey: config.apiKey,
+        baseUrl: config.baseUrl,
+        model: config.modelId,
+        ...(uploadDir && { uploadDir }),
+      });
     case "seedance":
       return new SeedanceProvider({
         apiKey: config.apiKey,
